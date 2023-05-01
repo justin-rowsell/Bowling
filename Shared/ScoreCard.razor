@@ -28,7 +28,7 @@
                     @if (roundScore.RoundNumber == 10)
                     {
                         <input type="text" class="h-full w-12" value="X" disabled />
-
+                        <input type="number" min="0" max="10" class="flex h-full w-full border" @bind="roundScore.SecondFrame" />
                         <input type="number" min="0" max="10" class="flex h-full w-full  border" @bind="roundScore.BonusFrame" />
                     } else {
                         <input type="text" class="h-full w-12" value="X" disabled />
