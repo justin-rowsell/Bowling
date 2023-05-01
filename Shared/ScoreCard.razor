@@ -1,0 +1,86 @@
+@using Bowling.Models
+
+@*Full width score cards for ten frames of a bowling game with inputs for each frame*@
+<div class="flex w-full">
+    @foreach (var roundScore in RoundScores ?? new List<RoundScore>())
+    {
+        <div class="flex flex-col w-1/10 h-1/8 border px-2 py-1">
+            <div class="flex flex-col">
+                @*Display the round number and allow the user to select if the round was a spare or strike*@
+                <p class="flex text-center">Round @roundScore.RoundNumber</p>
+                <div class="flex flex-row">
+                    <input id="strike-@roundScore.RoundNumber" type="checkbox" 
+                    class="w-1/2 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" 
+                    @bind="roundScore.IsStrike" disabled="@roundScore.IsSpare" />
+                    <label for="strike-@roundScore.RoundNumber" class="w-1/2 ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Strike</label>
+                </div>
+                <div class="flex flex-row">
+                    <input id="spare-@roundScore.RoundNumber" type="checkbox" 
+                    class="w-1/2 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" 
+                    @bind="roundScore.IsSpare" disabled="@roundScore.IsStrike"  />
+                    <label for="spare-@roundScore.RoundNumber" class="w-1/2 ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Spare</label>
+                </div>
+            </div>
+            <div class="flex flex-row">
+                @*For a strike, show one input with an x and a second empty input*@
+                @if (roundScore.IsStrike)
+                {
+                    @if (roundScore.RoundNumber == 10)
+                    {
+                        <input type="text" class="h-full w-12" value="X" disabled />
+
+                        <input type="number" min="0" max="10" class="flex h-full w-full  border" @bind="roundScore.BonusFrame" />
+                    } else {
+                        <input type="text" class="h-full w-12" value="X" disabled />
+                        <input type="text" class="h-full w-12" value="" disabled />
+                    }
+                }
+                @*For a spare, show one input with the first frame and a second input with a / and a third empty input*@
+                else if (roundScore.IsSpare)
+                {
+                    <input type="number" min="0" max="9" class="flex h-full w-1/2 border" @bind="roundScore.FirstFrame" />
+                    <input type="text" class="flex h-full w-12" value="/" disabled />
+                    @if (roundScore.RoundNumber == 10)
+                    {
+                        <input type="number" min="0" max="10" class="flex h-full w-full border" @bind="roundScore.BonusFrame" />
+                    }
+                }
+                @*For a normal round, show two inputs with the first and second frame*@
+                else
+                {
+                    <input type="number" min="0" max="9" class="flex h-full w-1/2 border" 
+                    @bind="roundScore.FirstFrame" disabled="@roundScore.IsStrike" />
+                    <input type="number" min="0" max="9" class="flex h-full w-1/2 border" 
+                    @bind="roundScore.SecondFrame" disabled="@roundScore.IsSpare" />
+                }
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public List<RoundScore>? RoundScores { get; set; }
+
+    public void MarkStrike(int roundNumber)
+    {
+        var roundScore = RoundScores?.FirstOrDefault(x => x.RoundNumber == roundNumber);
+        if (roundScore != null)
+        {
+            roundScore.IsStrike = true;
+            roundScore.IsSpare = false;
+            // set the second frame score to 0 if we're not in the last round
+            roundScore.SecondFrame = roundScore.RoundNumber == 10 ? roundScore.SecondFrame : 0;
+        }
+    }
+
+    public void MarkSpare(int roundNumber) {
+        var roundScore = RoundScores?.FirstOrDefault(x => x.RoundNumber == roundNumber);
+        if (roundScore != null)
+        {
+            roundScore.IsSpare = true;
+            roundScore.IsStrike = false;
+            roundScore.SecondFrame = 10 - roundScore.FirstFrame;
+        }
+    }
+}

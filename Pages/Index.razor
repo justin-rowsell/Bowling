@@ -1,9 +1,19 @@
 ﻿@page "/"
 
+@inject NavigationManager Navigation
+
 <PageTitle>Index</PageTitle>
+<!-- landing page for the bowling app. Welcom message and button to start a new game, button will route us to the scoring component -->
+<div class="text-center mx-auto">
+    <h1 class="p-8 text-4xl" >Welcome to Bowling!</h1>
+    <button class="btn btn-primary" @onclick="StartGame">Start Game</button>
+</div>
 
-<h1>Hello, world!</h1>
-
-Welcome to your new app.
-
-<SurveyPrompt Title="How is Blazor working for you?" />
+@code {
+    // method to route us to the scoring component
+    
+    private void StartGame()
+    {
+        Navigation.NavigateTo("/scoring");
+    }
+}

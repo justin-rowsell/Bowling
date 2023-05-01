@@ -1,0 +1,37 @@
+@using Bowling.Models
+@*Leaderboard component to display player scores and names*@
+<div class="leaderboard">
+    <h2 class="text-3xl">Leaderboard</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Player</th>
+                <th>Score</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var playerScore in PlayerScores)
+            {
+                <tr>
+                    <td>@playerScore.Name</td>
+                    <td>@playerScore.TotalScore</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+
+
+@code {
+    private List<PlayerScore> _playerScores;
+    [Parameter]
+    public List<PlayerScore> PlayerScores {
+        get { 
+            if (_playerScores == null) 
+                _playerScores = new List<PlayerScore>(); 
+            return _playerScores; 
+        }
+        set { _playerScores = value?.OrderByDescending(s => s.TotalScore).ToList() ?? new List<PlayerScore>(); }
+    }
+}
